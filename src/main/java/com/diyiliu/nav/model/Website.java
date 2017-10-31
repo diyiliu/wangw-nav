@@ -33,7 +33,8 @@ public class Website {
     }
 
     public void setUrl(String url) {
-        this.url = url;
+        String regex = "[hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://";
+        this.url = url.replaceAll(regex, "");
     }
 
     public int getTypeId() {
