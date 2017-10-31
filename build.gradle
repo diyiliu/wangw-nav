@@ -1,0 +1,50 @@
+group 'com.diyiliu'
+version '1.0'
+
+apply plugin: 'java'
+apply plugin: 'war'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+ext {
+    springVersion = '4.2.5.RELEASE'
+}
+
+dependencies {
+    compile group: 'org.springframework', name: 'spring-beans', version: "$springVersion"
+    compile group: 'org.springframework', name: 'spring-webmvc', version: "$springVersion"
+    compile group: 'org.springframework', name: 'spring-context', version: "$springVersion"
+    compile group: 'org.springframework', name: 'spring-context-support', version: "$springVersion"
+    compile group: 'org.springframework', name: 'spring-aop', version: "$springVersion"
+    compile group: 'org.springframework', name: 'spring-tx', version: "$springVersion"
+
+    compile group: 'javax.servlet', name: 'servlet-api', version: '2.5'
+    compile group: 'org.thymeleaf', name: 'thymeleaf-spring4', version: '3.0.7.RELEASE'
+    compile group: 'nz.net.ultraq.thymeleaf', name: 'thymeleaf-layout-dialect', version: '2.2.2'
+    compile group: 'org.webjars', name: 'jquery', version: '3.2.1'
+    compile group: 'org.webjars', name: 'materializecss', version: '0.100.2'
+
+    compile group: 'commons-dbutils', name: 'commons-dbutils', version: '1.7'
+    compile group: 'com.alibaba', name: 'druid', version: '1.1.2'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '5.1.37'
+
+    compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.2'
+    compile group: 'ch.qos.logback', name: 'logback-classic', version: '1.2.3'
+
+    testCompile group: 'org.springframework', name: 'spring-test', version: "$springVersion"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+}
+
+war{
+    archiveName = 'wangw-nav.war'
+}
+
+tasks.withType(JavaCompile) {
+    options.encoding = "UTF-8"
+}

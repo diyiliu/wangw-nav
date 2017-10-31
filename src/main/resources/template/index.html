@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout/default">
+<head>
+    <meta charset="UTF-8"/>
+    <title>首页</title>
+    <link rel="stylesheet" href="../static/css/materialize-icon.css" th:href="@{/static/css/materialize-icon.css}">
+    <link rel="stylesheet" href="../static/css/nav.css" th:href="@{/static/css/nav.css}">
+</head>
+<body>
+<div layout:fragment="content">
+    <div class="section search" style="box-sizing: border-box">
+        <div class="container">
+            <div class="row">
+                <form action="http://www.baidu.com/baidu" target="_blank">
+                    <div class="input-field col m6 offset-m2">
+                        <input type="text" class="white" name="word">
+                    </div>
+                    <div class="input-field col m2">
+                        <input type="submit" class="btn" value="百度一下">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="section main">
+        <div class="container">
+            <div class="row toolbar">
+                <div class="right">
+                    <a href="#modal1" class="modal-trigger" title="添加" id="add"><i
+                            class="material-icons">playlist_add</i></a>
+                    <a href="#" class="modal-trigger" title="编辑" id="edit"><i
+                            class="material-icons">playlist_add_check</i></a>
+                </div>
+            </div>
+
+            <ul th:each="group:${groupList}">
+                <li>
+                    <div class="row">
+                        <div class="col m2 center">
+                            <h5 th:text="${group.type}"></h5>
+                        </div>
+                        <ul class="col m10 nav-list">
+                            <li th:each="site:${group.websiteList}">
+                                <a href="#" target="_blank" th:href="@{'http://'+${site.url}}" th:text="${site.name}"></a>
+                            </li>
+                        </ul>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    <!-- Modal Structure -->
+    <div id="modal1" class="modal">
+        <form action="/addSite" method="post" id="siteForm">
+            <div class="modal-content">
+                <h5>添加网址</h5>
+                <div class="row">
+
+                    <div class="input-field col m2">
+                        <input type="text" name="name">
+                    </div>
+                    <div class="input-field col m6">
+                        <input type="text" name="url">
+                    </div>
+                    <div class="input-field col m4">
+                        <select name="typeId">
+                            <option value="" disabled selected>选择类别</option>
+                            <option th:each="item:${typeList}" th:value="${item.id}" th:text="${item.name}"></option>
+                        </select>
+                    </div>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <input type="submit" class="modal-action waves-effect btn deep-orange" value="保存">
+            </div>
+        </form>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('select').material_select();
+            $('.modal').modal();
+
+        });
+    </script>
+</div>
+</body>
+</html>

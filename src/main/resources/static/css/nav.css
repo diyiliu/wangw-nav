@@ -1,0 +1,63 @@
+body {
+    background: url("../img/bd.jpg") no-repeat center fixed;
+    background-size: cover;
+    font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+}
+
+.search{
+    height: 330px;
+    padding-top: 210px;
+}
+
+.search .input-field input[type=text]{
+    padding-left: 10px;
+    height: 2.6em;
+    border-radius: 2px;
+}
+
+.main .container{
+    background-color: #F5F5F5;
+    border-left:15px solid #F5F5F5;
+    border-right:15px solid #F5F5F5;
+}
+
+.main .toolbar{
+    margin-bottom: -10px;
+}
+.main .toolbar a{
+    color: #343434;
+}
+.main .container>ul>li h5{
+    color: #646464;
+}
+.main .container>ul>li:hover .nav-list{
+    border-left: 3px solid #ff5722;
+}
+
+.main .nav-list{
+    padding-bottom: 10px;
+    border-left: 3px solid #F5F5F5;
+    transition: all 200ms;
+}
+
+.main .nav-list li{
+    /*background-color: tomato;*/
+    width: 120px;
+    float: left;
+    margin-right: 10px;
+}
+
+.main .nav-list li a{
+    display: block;
+    text-align: center;
+    color: #545454;
+}
+.main .nav-list li a img{
+    width: 16px;
+    height: 16px;
+    margin-right: 2px;
+}
+
+.modal{
+    overflow-y: visible;
+}
