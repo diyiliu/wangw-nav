@@ -9,6 +9,7 @@ public class Website {
     private Integer id;
     private String name;
     private String url;
+    private String icon;
     private int typeId;
     private int top;
 
@@ -33,7 +34,7 @@ public class Website {
     }
 
     public void setUrl(String url) {
-        String regex = "[hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://";
+        String regex = "[hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://|/+$";
         this.url = url.replaceAll(regex, "");
     }
 
@@ -51,5 +52,13 @@ public class Website {
 
     public void setTop(int top) {
         this.top = top;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

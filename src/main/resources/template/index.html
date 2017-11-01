@@ -31,7 +31,7 @@
                     <a href="#modal1" class="modal-trigger" title="添加" id="add"><i
                             class="material-icons">playlist_add</i></a>
                     <a href="#" class="modal-trigger" title="编辑" id="edit"><i
-                            class="material-icons">list</i></a>
+                            class="material-icons">sort</i></a>
                 </div>
             </div>
 
@@ -43,7 +43,8 @@
                         </div>
                         <ul class="col m10 nav-list">
                             <li th:each="site:${group.websiteList}">
-                                <a href="#" target="_blank" th:href="@{'http://'+${site.url}}" th:text="${site.name}"></a>
+                                <a href="#" target="_blank" th:href="|http://${site.url}|"
+                                   th:utext="|<img src='${site.icon}'>${site.name}|"></a>
                             </li>
                         </ul>
                     </div>
@@ -53,11 +54,10 @@
     </div>
     <!-- Modal Structure -->
     <div id="modal1" class="modal">
-        <form action="/addSite" method="post" id="siteForm">
-            <div class="modal-content">
-                <h5>添加网址</h5>
-                <div class="row">
-
+        <div class="modal-content">
+            <h5>添加网址</h5>
+            <div class="row">
+                <form action="/addSite" method="post" id="siteForm">
                     <div class="input-field col m2">
                         <input type="text" name="name">
                     </div>
@@ -70,19 +70,17 @@
                             <option th:each="item:${typeList}" th:value="${item.id}" th:text="${item.name}"></option>
                         </select>
                     </div>
-
-                </div>
+                </form>
             </div>
-            <div class="modal-footer">
-                <input type="submit" class="modal-action waves-effect btn deep-orange" value="保存">
-            </div>
-        </form>
+        </div>
+        <div class="modal-footer">
+            <a href="#!" onclick="$('#siteForm').submit()" class="modal-action modal-close waves-effect btn deep-orange">保存</a>
+        </div>
     </div>
     <script type="text/javascript">
         $(document).ready(function () {
             $('select').material_select();
             $('.modal').modal();
-
         });
     </script>
 </div>

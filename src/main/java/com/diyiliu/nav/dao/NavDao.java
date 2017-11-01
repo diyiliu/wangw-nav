@@ -29,8 +29,8 @@ public class NavDao {
     private QueryRunner queryRunner;
 
     public void insertWebSite(Website website) throws SQLException {
-        String sql = "INSERT INTO nav_site(name,url,type)VALUES (?,?,?)";
-        Object[] params = new Object[]{website.getName(), website.getUrl(), website.getTypeId()};
+        String sql = "INSERT INTO nav_site(name,url,icon,type)VALUES (?,?,?,?)";
+        Object[] params = new Object[]{website.getName(), website.getUrl(), website.getIcon(), website.getTypeId()};
 
         queryRunner.execute(sql, params);
     }
@@ -57,7 +57,7 @@ public class NavDao {
 
     public List<GroupSite> queryGroupSiteList() throws SQLException {
 
-        String sql = "SELECT s.ID, s.`NAME`, s.URL, t.ID TYPEID,t.`NAME` TYPE " +
+        String sql = "SELECT s.ID, s.`NAME`, s.URL, s.ICON, t.ID TYPEID,t.`NAME` TYPE " +
                 "FROM nav_site s INNER JOIN nav_type t on s.TYPE=t.ID " +
                 "ORDER BY t.TOP DESC, s.TOP DESC";
 
@@ -69,12 +69,13 @@ public class NavDao {
                 site.setName(rs.getString("name"));
                 site.setUrl(rs.getString("url"));
                 site.setTypeId(rs.getInt("typeid"));
+                site.setIcon(rs.getString("icon"));
 
                 String type = rs.getString("TYPE");
 
                 boolean flag = true;
-                for (GroupSite group: list){
-                    if (type.equals(group.getType())){
+                for (GroupSite group : list) {
+                    if (type.equals(group.getType())) {
                         List l = group.getWebsiteList();
                         l.add(site);
                         flag = false;
@@ -82,7 +83,7 @@ public class NavDao {
                     }
                 }
 
-                if (flag){
+                if (flag) {
                     List l = new ArrayList();
                     l.add(site);
                     GroupSite group = new GroupSite();

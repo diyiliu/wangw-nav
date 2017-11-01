@@ -20,6 +20,9 @@
 
     <!-- MVC注解映射的支持 -->
     <mvc:annotation-driven/>
+
+    <mvc:default-servlet-handler/>
+
     <!-- 静态文件配置 -->
     <mvc:resources mapping="/static/**" location="classpath:/static/"/>
 
