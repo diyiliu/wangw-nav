@@ -11,6 +11,7 @@ public class Website {
     private String url;
     private String icon;
     private int typeId;
+    private String typeName;
     private int top;
 
     public Integer getId() {
@@ -60,5 +61,13 @@ public class Website {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public String getTypeName() {
+        return typeName;
+    }
+
+    public void setTypeName(String typeName) {
+        this.typeName = typeName;
     }
 }

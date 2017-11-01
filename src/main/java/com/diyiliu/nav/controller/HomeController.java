@@ -33,9 +33,6 @@ public class HomeController {
     @Resource
     private NavDao navDao;
 
-    @Resource(name = "siteTypeCacheProvider")
-    private ICache typeCache;
-
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public String index(Model model) throws Exception {
         List types = navDao.querySiteTypeList();
@@ -43,7 +40,6 @@ public class HomeController {
 
         model.addAttribute("typeList", types);
         model.addAttribute("groupList", groups);
-        model.addAttribute(typeCache);
 
         return "index";
     }

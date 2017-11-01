@@ -62,7 +62,18 @@ body {
     left: 0px;
 }
 
-
 .modal{
     overflow-y: visible;
+}
+
+.siteModal .modal-content .type{
+    padding-right:30px;
+    /*background-color: darkcyan;*/
+}
+
+.siteModal .modal-content .type a{
+    /*background-color: #0f9d58;*/
+    position: absolute;
+    top: 15px;
+    right: 0px;
 }
