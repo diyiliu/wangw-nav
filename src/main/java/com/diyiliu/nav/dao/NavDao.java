@@ -4,6 +4,7 @@ import com.diyiliu.common.cache.ICache;
 import com.diyiliu.nav.model.GroupSite;
 import com.diyiliu.nav.model.SiteType;
 import com.diyiliu.nav.model.Website;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
 import org.springframework.stereotype.Component;
@@ -11,9 +12,8 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Description: NavDao
@@ -34,12 +34,12 @@ public class NavDao {
         String typeName = website.getTypeName();
 
         long typeId;
-        if (!siteTypeCacheProvider.containsKey(typeName)){
+        if (!siteTypeCacheProvider.containsKey(typeName)) {
             SiteType type = new SiteType();
             type.setName(typeName);
 
-           typeId = insertSiteType(type);
-        }else {
+            typeId = insertSiteType(type);
+        } else {
             SiteType type = (SiteType) siteTypeCacheProvider.get(typeName);
             typeId = type.getId();
         }
@@ -52,9 +52,53 @@ public class NavDao {
     public long insertSiteType(SiteType type) throws SQLException {
         String sql = "INSERT INTO nav_type(name,top)VALUES (?,?)";
         Object[] params = new Object[]{type.getName(), type.getTop()};
-        Map rs =  queryRunner.insert(sql, new MapHandler(),params);
+        Map rs = queryRunner.insert(sql, new MapHandler(), params);
         return (long) rs.get("GENERATED_KEY");
     }
+
+    public void batchSiteType(List<SiteType> types) throws SQLException {
+        List<SiteType> updateList = new ArrayList();
+        List<SiteType> insertList = new ArrayList();
+        types.forEach(t -> {
+            if (siteTypeCacheProvider.containsKey(t.getName())) {
+                updateList.add(t);
+            } else {
+                insertList.add(t);
+            }
+        });
+
+        // 批量更新
+        String updateSql = "UPDATE nav_type SET top=? WHERE name=?";
+        Object[][] updateParam = new Object[updateList.size()][];
+        for (int i = 0; i < updateList.size(); i++) {
+            SiteType type = updateList.get(i);
+            updateParam[i] = new Object[]{type.getTop(), type.getName()};
+        }
+        queryRunner.batch(updateSql, updateParam);
+
+        // 批量插入
+        String insertSql = "INSERT INTO nav_type(name,top)VALUES (?,?)";
+        Object[][] insertParam = new Object[insertList.size()][];
+        for (int i = 0; i < insertList.size(); i++) {
+            SiteType type = insertList.get(i);
+            insertParam[i] = new Object[]{type.getName(), type.getTop()};
+        }
+        queryRunner.batch(insertSql, insertParam);
+
+
+        // 批量删除
+        String delSql = "DELETE FROM nav_type WHERE name = ?";
+        Set set = types.stream().map(SiteType::getName).collect(Collectors.toSet());
+        Set tmp = siteTypeCacheProvider.getKeys();
+        Collection subKeys = CollectionUtils.subtract(tmp, set);
+        Object[][] delParam = new Object[subKeys.size()][];
+        int i = 0;
+        for (Iterator iterator = subKeys.iterator(); iterator.hasNext();){
+            delParam[i++] = new Object[]{iterator.next()};
+        }
+        queryRunner.batch(delSql, delParam);
+    }
+
 
     public List<SiteType> querySiteTypeList() throws SQLException {
         String sql = "SELECT t.id, t.name, t.top FROM nav_type t order by t.top";
@@ -79,7 +123,7 @@ public class NavDao {
 
         String sql = "SELECT s.ID, s.`NAME`, s.URL, s.ICON, t.`NAME` TYPE " +
                 "FROM nav_site s INNER JOIN nav_type t on s.TYPE=t.ID " +
-                "ORDER BY t.TOP DESC, s.TOP DESC";
+                "ORDER BY t.TOP, s.TOP";
 
         List<GroupSite> list = new ArrayList();
         queryRunner.query(sql, (ResultSet rs) -> {

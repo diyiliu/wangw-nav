@@ -12,6 +12,14 @@ public class SiteType {
     private String name;
     private int top;
 
+    public SiteType() {
+    }
+
+    public SiteType(String name, int top) {
+        this.name = name;
+        this.top = top;
+    }
+
     public int getId() {
         return id;
     }

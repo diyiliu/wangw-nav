@@ -7,6 +7,8 @@
     <title>首页</title>
     <link rel="stylesheet" href="../static/css/materialize-icon.css" th:href="@{/static/css/materialize-icon.css}">
     <link rel="stylesheet" href="../static/css/nav.css" th:href="@{/static/css/nav.css}">
+    <link rel="stylesheet" href="../static/plugin/gridly/css/gridly.css">
+    <script src="../static/plugin/gridly/js/gridly.js"></script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -24,14 +26,14 @@
             </div>
         </div>
     </div>
-    <div class="section main">
+    <div class="section main" id="main">
         <div class="container">
             <div class="row toolbar">
                 <div class="right">
                     <a href="#modal1" class="modal-trigger" title="添加" id="add"><i
                             class="material-icons">playlist_add</i></a>
-                    <a href="#" class="modal-trigger" title="编辑" id="edit"><i
-                            class="material-icons">sort</i></a>
+                    <a href="#" title="排序" id="sort"><i class="material-icons">sort</i></a>
+                    <a href="#" title="保存" id="clear"><i class="material-icons">clear_all</i></a>
                 </div>
             </div>
 
@@ -41,10 +43,11 @@
                         <div class="col m2 center">
                             <h5 th:text="${group.type}"></h5>
                         </div>
-                        <ul class="col m10 nav-list">
-                            <li th:each="site:${group.websiteList}">
-                                <a href="#" target="_blank" th:href="|http://${site.url}|"
+                        <ul class="col m10 nav-list gridly">
+                            <li th:each="site:${group.websiteList}" class="brick">
+                                <a href="#" class="site" target="_blank" th:href="|http://${site.url}|"
                                    th:utext="|<img src='${site.icon}'>${site.name}|"></a>
+                                <a href="#" class="del"><i class="material-icons tiny">clear</i></a>
                             </li>
                         </ul>
                     </div>
@@ -57,7 +60,7 @@
         <div class="modal-content">
             <h5>添加网址</h5>
             <div class="row">
-                <form action="/addSite" method="post" id="siteForm">
+                <form th:action="@{/addSite}" method="post" id="siteForm">
                     <div class="input-field col m2">
                         <input type="text" name="name">
                     </div>
@@ -69,7 +72,7 @@
                             <option value="" disabled selected>选择类别</option>
                             <option th:each="item:${typeList}" th:value="${item.name}" th:text="${item.name}"></option>
                         </select>
-                        <a href="#modal2" class="modal-trigger"><i class="material-icons">more_vert</i></a>
+                        <a href="#modal2" class="modal-trigger" id="modal2Show"><i class="material-icons">more_vert</i></a>
                     </div>
                 </form>
             </div>
@@ -79,7 +82,7 @@
                class="modal-action modal-close waves-effect btn deep-orange">保存</a>
         </div>
     </div>
-    <div id="modal2" class="modal siteModal">
+    <div id="modal2" class="modal typeModal">
         <div class="modal-content">
             <div class="row">
                 <div class="input-field col m2">
@@ -89,23 +92,163 @@
                     <input id="type_name" type="text">
                 </div>
             </div>
+            <div class="row">
+                <ul class="col m12 typeGroup gridly">
+                    <li class="brick" th:each="item:${typeList}"
+                        th:utext="|${item.name}<a href='#' class='del'><i class='material-icons tiny'>clear</i></a>|">
+                    </li>
+                </ul>
+            </div>
         </div>
         <div class="modal-footer">
-            <a href="#!" onclick="addType()" class="modal-action waves-effect btn deep-orange">保存</a>
+            <a href="#!" onclick="insertType()" class="modal-action waves-effect btn">插入</a>
+            <a href="#!" onclick="saveType()" class="modal-action waves-effect btn deep-orange">保存</a>
         </div>
     </div>
     <script type="text/javascript">
         $(document).ready(function () {
             $('select').material_select();
             $('.modal').modal();
+
+            $('#main .nav-list .brick .del').click(function () {
+                var group = $(this).closest('.nav-list');
+                var len = $(group).find('li').length;
+                if (len == 1) {
+                    var t = $(group).closest('.row').parent('li');
+                    $(t).remove();
+                } else {
+                    $(this).parent('li').remove();
+                }
+            });
+
+            $('#sort').click(function () {
+                $(this).hide();
+                $('#clear').show();
+                $('.main .nav-list').addClass('bricks');
+                $('.nav-list').gridly({
+                    base: 50, // px
+                    gutter: 20, // px
+                    columns: 10
+                });
+                $('.nav-list').gridly('draggable', 'on');
+            });
+
+            $('#modal2Show').click(function () {
+                $('.typeGroup').gridly({
+                    base: 40, // px
+                    gutter: 45, // px
+                    columns: 8
+                });
+            });
+
+            $('#modal2 .typeGroup .del').click(function () {
+                $(this).closest('li').remove();
+            });
+
+            $('#clear').click(function () {
+                $(this).hide();
+                $('#sort').show();
+
+                saveSort();
+
+                $('#main  .nav-list').removeClass('bricks');
+                $('#main  .nav-list').removeAttr('style');
+                $('#main  .nav-list li').removeAttr('style');
+                $('.gridly').gridly('draggable', 'off');
+            });
         });
 
-        function addType() {
+        function insertType() {
             var name = $("#type_name").val();
-            var len = $("#selType option").length;
-            $("#selType").append("<option value='" + name + "'>" + name + "</option>");
+            if (name.trim().length > 0) {
+                $('#modal2 .typeGroup').append(' <li class="brick">' + name + '<a href="#" class="del"><i class="material-icons tiny">clear</i></a></li>');
+                $('#modal2 .typeGroup').gridly({
+                    base: 40, // px
+                    gutter: 45, // px
+                    columns: 8
+                });
+                $("#type_name").val('');
+            }
+        }
+
+        function saveType() {
+            $("#selType").empty();
+
+
+            var tmp =[];
+            $('#modal2 .typeGroup li').each(function () {
+                var name = $(this).html().replace(/<a.*a>/, '');
+                var self = $(this);
+                var left = self.css('left').replace(/px/, '');
+                var top = self.css('top').replace(/px/, '');
+
+                //权重 = left + top * col_base
+                var weight = parseInt(left) + parseInt(top) * 10000;
+                tmp[weight] = name;
+
+            });
+
+            var types = [];
+            var n = 0;
+            for (var i in tmp){
+                var name = tmp[i];
+                $("#selType").append('<option value="' + name + '">' + name + '</option>')
+
+                var t = {};
+                t.name = name;
+                t.top = ++n;
+                types.push(t);
+            }
+
             $('#modal2').modal('close');
+
             $('select').material_select();
+            $.post("/saveType", {typesJson: JSON.stringify(types)},
+                function (data) {
+                    console.log(data.result);
+                }, "json");
+        }
+
+        function saveSort() {
+            var param = [];
+            $('.main .container>ul>li').each(function () {
+                var obj = {};
+
+                var typeName = $(this).find('h5').html();
+                var tmp = {};
+                $(this).find('ul>li').each(function () {
+                    var oA = $(this).find('a');
+
+                    var ct = {};
+                    ct.url = $(oA).attr('href');
+                    ct.typeId = $(oA).attr('data-type');
+                    ct.name = $(oA).html().replace(/^<img.*>/, '');
+
+                    var self = $(this);
+                    var left = self.css('left').replace(/px/, '');
+                    var top = self.css('top').replace(/px/, '');
+
+                    //权重 = left + top * col_base
+                    var weight = parseInt(left) + parseInt(top) * 10000;
+                    tmp[weight] = ct;
+                });
+
+                var arr = [];
+                for (var i in tmp) {
+                    var val = tmp[i];
+                    arr.push(val);
+                }
+
+                obj.type = typeName;
+                obj.websiteList = arr;
+                param.push(obj);
+            });
+
+            //console.log(JSON.stringify(param));
+            $.post("/save", {"param": JSON.stringify(param)},
+                function (data) {
+                    console.log(data.result);
+                }, "json");
         }
     </script>
 </div>

@@ -17,4 +17,12 @@ public class TestReg {
         String url = "http://www.baidu.com///////";
         System.out.println(url.replaceAll(reg, ""));
     }
+
+    @Test
+    public void test1(){
+        String reg ="^<img.*>";
+
+        String str = "<img src=\\\"upload/icon3845535834536403953.ico\\\">淘宝";
+        System.out.println(str.replaceAll(reg, ""));
+    }
 }

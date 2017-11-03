@@ -1,60 +1,67 @@
 body {
     background: url("../img/bd.jpg") no-repeat center fixed;
     background-size: cover;
-    font-family: "Arial","Microsoft YaHei","黑体","宋体",sans-serif;
+    font-family: "Arial", "Microsoft YaHei", "黑体", "宋体", sans-serif;
 }
 
-.search{
+.search {
     height: 330px;
     padding-top: 210px;
 }
 
-.search .input-field input[type=text]{
+.search .input-field input[type=text] {
     padding-left: 10px;
     height: 2.6em;
     border-radius: 2px;
 }
 
-.main .container{
+.main .container {
     background-color: #F5F5F5;
-    border-left:15px solid #F5F5F5;
-    border-right:15px solid #F5F5F5;
+    border-left: 15px solid #F5F5F5;
+    border-right: 15px solid #F5F5F5;
 }
 
-.main .toolbar{
+.main .toolbar {
     margin-bottom: -10px;
 }
-.main .toolbar a{
+
+.main .toolbar a {
     color: #343434;
 }
-.main .container>ul>li h5{
+
+.main .container > ul > li h5 {
     color: #646464;
 }
-.main .container>ul>li:hover .nav-list{
+
+.main .container > ul > li:hover .nav-list {
     border-left: 3px solid #ff5722;
 }
 
-.main .nav-list{
-    padding-bottom: 10px;
+.main .nav-list {
+    position: relative;
+    padding: 10px;
     border-left: 3px solid #F5F5F5;
     transition: all 200ms;
 }
 
-.main .nav-list li{
+.main .nav-list li {
     /*background-color: tomato;*/
     width: 120px;
     float: left;
-    margin-right: 10px;
+    margin-left: 10px;
+    position: relative;
 }
 
-.main .nav-list li a{
+.main .nav-list li .site {
     display: block;
     text-align: left;
     color: #545454;
-    padding-left:20px;
+    padding-left: 20px;
     position: relative;
+    /*background-color: #0f9d58;*/
 }
-.main .nav-list li a img{
+
+.main .nav-list li .site img {
     width: 16px;
     height: 16px;
     position: absolute;
@@ -62,18 +69,62 @@ body {
     left: 0px;
 }
 
-.modal{
+.main .nav-list li a i {
+    display: none;
+}
+
+.main .nav-list.bricks li a i {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: #343434;
+    /*background-color: #0f9d58;*/
+}
+
+.main .nav-list.bricks li .site {
+    border: 1px dotted #cccccc;
+}
+
+.modal {
     overflow-y: visible;
 }
 
-.siteModal .modal-content .type{
-    padding-right:30px;
+.siteModal .modal-content .type {
+    padding-right: 30px;
     /*background-color: darkcyan;*/
 }
 
-.siteModal .modal-content .type a{
+.siteModal .modal-content .type a {
     /*background-color: #0f9d58;*/
     position: absolute;
     top: 15px;
+    right: 0px;
+}
+
+#clear {
+    display: none;
+}
+
+.typeModal .modal-content .typeGroup {
+    position: relative;
+    /*background-color: tomato;*/
+}
+
+.typeModal .modal-content .typeGroup li {
+    background-color: #fbfafb;
+    width: 120px;
+    line-height: 28px;
+    text-align: center;
+    float: left;
+    margin: 10px;
+    border: 1px dotted #cccccc;
+}
+
+.typeModal .modal-content .typeGroup a {
+    /*background-color: gold;*/
+    color: #545454;
+    position: absolute;
+    top: 0px;
     right: 0px;
 }
