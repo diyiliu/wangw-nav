@@ -175,7 +175,7 @@
             $("#selType").empty();
 
 
-            var tmp =[];
+            var tmp = [];
             $('#modal2 .typeGroup li').each(function () {
                 var name = $(this).html().replace(/<a.*a>/, '');
                 var self = $(this);
@@ -190,7 +190,7 @@
 
             var types = [];
             var n = 0;
-            for (var i in tmp){
+            for (var i in tmp) {
                 var name = tmp[i];
                 $("#selType").append('<option value="' + name + '">' + name + '</option>')
 
@@ -221,8 +221,8 @@
 
                     var ct = {};
                     ct.url = $(oA).attr('href');
-                    ct.typeId = $(oA).attr('data-type');
                     ct.name = $(oA).html().replace(/^<img.*>/, '');
+                    ct.typeName = typeName;
 
                     var self = $(this);
                     var left = self.css('left').replace(/px/, '');
@@ -245,7 +245,7 @@
             });
 
             //console.log(JSON.stringify(param));
-            $.post("/save", {"param": JSON.stringify(param)},
+            $.post("/saveSort", {"param": JSON.stringify(param)},
                 function (data) {
                     console.log(data.result);
                 }, "json");

@@ -32,21 +32,13 @@ public class NavDao {
 
     public void insertWebSite(Website website) throws SQLException {
         String typeName = website.getTypeName();
-
-        long typeId;
-        if (!siteTypeCacheProvider.containsKey(typeName)) {
-            SiteType type = new SiteType();
-            type.setName(typeName);
-
-            typeId = insertSiteType(type);
-        } else {
+        if (siteTypeCacheProvider.containsKey(typeName)) {
             SiteType type = (SiteType) siteTypeCacheProvider.get(typeName);
-            typeId = type.getId();
-        }
-        String sql = "INSERT INTO nav_site(name,url,icon,type)VALUES (?,?,?,?)";
-        Object[] params = new Object[]{website.getName(), website.getUrl(), website.getIcon(), typeId};
+            String sql = "INSERT INTO nav_site(name,url,icon,type)VALUES (?,?,?,?)";
+            Object[] params = new Object[]{website.getName(), website.getUrl(), website.getIcon(), type.getId()};
 
-        queryRunner.execute(sql, params);
+            queryRunner.execute(sql, params);
+        }
     }
 
     public long insertSiteType(SiteType type) throws SQLException {
