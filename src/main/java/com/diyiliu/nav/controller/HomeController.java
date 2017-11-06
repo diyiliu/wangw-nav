@@ -57,15 +57,19 @@ public class HomeController {
         String iconPath = copyFileToIcon(url, new File(dest));
 
         site.setIcon(ICON_PATH + iconPath);
-        navDao.insertWebSite(site);
+        navDao.insertWebsite(site);
 
         return "redirect:/";
     }
 
-    @RequestMapping(value = "/saveSort", method = RequestMethod.POST)
+    @RequestMapping(value = "/saveSort")
     public @ResponseBody
-    HashMap saveSort(String param) throws IOException {
-        List<GroupSite> list = JacksonUtil.toList(param, GroupSite.class);
+    HashMap saveSort(String updateList, String delList) throws Exception {
+        List<Website> list1 = JacksonUtil.toList(updateList, Website.class);
+        navDao.updateWebsite(list1);
+
+        List<Integer> list2 = JacksonUtil.toList(delList, Integer.class);
+        navDao.deleteWebsite(list2);
 
         HashMap result = new HashMap();
         result.put("result", "success");
@@ -74,7 +78,8 @@ public class HomeController {
     }
 
     @RequestMapping(value = "/saveType")
-    public @ResponseBody HashMap saveType(String typesJson) throws Exception {
+    public @ResponseBody
+    HashMap saveType(String typesJson) throws Exception {
         List<SiteType> list = JacksonUtil.toList(typesJson, SiteType.class);
         navDao.batchSiteType(list);
         HashMap result = new HashMap();

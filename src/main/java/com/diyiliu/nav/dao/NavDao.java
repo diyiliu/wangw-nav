@@ -7,6 +7,7 @@ import com.diyiliu.nav.model.Website;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.QueryRunner;
 import org.apache.commons.dbutils.handlers.MapHandler;
+import org.apache.commons.dbutils.handlers.MapListHandler;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -30,7 +31,7 @@ public class NavDao {
     @Resource
     private QueryRunner queryRunner;
 
-    public void insertWebSite(Website website) throws SQLException {
+    public void insertWebsite(Website website) throws SQLException {
         String typeName = website.getTypeName();
         if (siteTypeCacheProvider.containsKey(typeName)) {
             SiteType type = (SiteType) siteTypeCacheProvider.get(typeName);
@@ -39,6 +40,25 @@ public class NavDao {
 
             queryRunner.execute(sql, params);
         }
+    }
+
+    public void deleteWebsite(List ids) throws SQLException {
+        String sql = "DELETE FROM nav_site WHERE id=?";
+        Object[][] param = new Object[ids.size()][];
+        for (int i = 0; i < ids.size(); i++) {
+            param[i] = new Object[]{ids.get(i)};
+        }
+        queryRunner.batch(sql, param);
+    }
+
+    public void updateWebsite(List<Website> list) throws SQLException {
+        String sql = "UPDATE nav_site SET top = ? WHERE id=?";
+        Object[][] param = new Object[list.size()][];
+        for (int i = 0; i < list.size(); i++) {
+            Website site = list.get(i);
+            param[i] = new Object[]{site.getTop(), site.getId()};
+        }
+        queryRunner.batch(sql, param);
     }
 
     public long insertSiteType(SiteType type) throws SQLException {
@@ -75,8 +95,17 @@ public class NavDao {
             SiteType type = insertList.get(i);
             insertParam[i] = new Object[]{type.getName(), type.getTop()};
         }
-        queryRunner.batch(insertSql, insertParam);
+        List<Map<String, Object>> rsList = queryRunner.insertBatch(insertSql, new MapListHandler(), insertParam);
+        for (int i = 0; i < rsList.size(); i++) {
+            Map rs = rsList.get(i);
+            Long id = (Long) rs.get("GENERATED_KEY");
+            SiteType type = new SiteType();
+            type.setId(id.intValue());
+            type.setName((String) insertParam[i][0]);
+            type.setTop((Integer) insertParam[i][1]);
 
+            siteTypeCacheProvider.put(type.getName(), type);
+        }
 
         // 批量删除
         String delSql = "DELETE FROM nav_type WHERE name = ?";
@@ -85,7 +114,7 @@ public class NavDao {
         Collection subKeys = CollectionUtils.subtract(tmp, set);
         Object[][] delParam = new Object[subKeys.size()][];
         int i = 0;
-        for (Iterator iterator = subKeys.iterator(); iterator.hasNext();){
+        for (Iterator iterator = subKeys.iterator(); iterator.hasNext(); ) {
             delParam[i++] = new Object[]{iterator.next()};
         }
         queryRunner.batch(delSql, delParam);

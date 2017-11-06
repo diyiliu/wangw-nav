@@ -32,8 +32,8 @@
                 <div class="right">
                     <a href="#modal1" class="modal-trigger" title="添加" id="add"><i
                             class="material-icons">playlist_add</i></a>
-                    <a href="#" title="排序" id="sort"><i class="material-icons">sort</i></a>
-                    <a href="#" title="保存" id="clear"><i class="material-icons">clear_all</i></a>
+                    <a href="javascript:void(0);" title="排序" id="sort"><i class="material-icons">sort</i></a>
+                    <a href="javascript:void(0);" title="保存" id="clear"><i class="material-icons">clear_all</i></a>
                 </div>
             </div>
 
@@ -45,9 +45,10 @@
                         </div>
                         <ul class="col m10 nav-list gridly">
                             <li th:each="site:${group.websiteList}" class="brick">
-                                <a href="#" class="site" target="_blank" th:href="|http://${site.url}|"
+                                <a href="javascript:void(0);" class="site" target="_blank" th:href="|http://${site.url}|"
+                                   th:attr="data-id=${site.id}"
                                    th:utext="|<img src='${site.icon}'>${site.name}|"></a>
-                                <a href="#" class="del"><i class="material-icons tiny">clear</i></a>
+                                <a href="javascript:void(0);" class="del"><i class="material-icons tiny">clear</i></a>
                             </li>
                         </ul>
                     </div>
@@ -78,7 +79,7 @@
             </div>
         </div>
         <div class="modal-footer">
-            <a href="#!" onclick="$('#siteForm').submit()"
+            <a href="javascript:void(0);" onclick="$('#siteForm').submit()"
                class="modal-action modal-close waves-effect btn deep-orange">保存</a>
         </div>
     </div>
@@ -95,22 +96,27 @@
             <div class="row">
                 <ul class="col m12 typeGroup gridly">
                     <li class="brick" th:each="item:${typeList}"
-                        th:utext="|${item.name}<a href='#' class='del'><i class='material-icons tiny'>clear</i></a>|">
+                        th:utext="|${item.name}<a href='javascript:void(0);' class='del'><i class='material-icons tiny'>clear</i></a>|">
                     </li>
                 </ul>
             </div>
         </div>
         <div class="modal-footer">
-            <a href="#!" onclick="insertType()" class="modal-action waves-effect btn">插入</a>
-            <a href="#!" onclick="saveType()" class="modal-action waves-effect btn deep-orange">保存</a>
+            <a href="javascript:void(0);" onclick="insertType()" class="modal-action waves-effect btn">插入</a>
+            <a href="javascript:void(0);" onclick="saveType()" class="modal-action waves-effect btn deep-orange">保存</a>
         </div>
     </div>
     <script type="text/javascript">
+
+        var delSiteArr = [];
         $(document).ready(function () {
             $('select').material_select();
             $('.modal').modal();
 
             $('#main .nav-list .brick .del').click(function () {
+                var a = $(this).parent('li').find('a.site');
+                delSiteArr.push($(a).attr('data-id'));
+
                 var group = $(this).closest('.nav-list');
                 var len = $(group).find('li').length;
                 if (len == 1) {
@@ -210,16 +216,15 @@
         }
 
         function saveSort() {
-            var param = [];
+            var arr = [];
             $('.main .container>ul>li').each(function () {
-                var obj = {};
-
                 var typeName = $(this).find('h5').html();
                 var tmp = {};
                 $(this).find('ul>li').each(function () {
                     var oA = $(this).find('a');
 
                     var ct = {};
+                    ct.id = $(oA).attr('data-id');
                     ct.url = $(oA).attr('href');
                     ct.name = $(oA).html().replace(/^<img.*>/, '');
                     ct.typeName = typeName;
@@ -232,23 +237,30 @@
                     var weight = parseInt(left) + parseInt(top) * 10000;
                     tmp[weight] = ct;
                 });
-
-                var arr = [];
+                var n = 1;
                 for (var i in tmp) {
                     var val = tmp[i];
+                    val.top = n++;
                     arr.push(val);
                 }
-
-                obj.type = typeName;
-                obj.websiteList = arr;
-                param.push(obj);
             });
 
             //console.log(JSON.stringify(param));
-            $.post("/saveSort", {"param": JSON.stringify(param)},
+            $.post("/saveSort", {"updateList": JSON.stringify(arr), "delList": JSON.stringify(delSiteArr)},
                 function (data) {
+                    delSiteArr = [];
                     console.log(data.result);
                 }, "json");
+            /*$.ajax({
+                url: "/saveSort",
+                data: {"updateList": JSON.stringify(arr), "delList": delSiteArr},
+                type: "POST",
+                dataType: 'json',
+                success: function (data) {
+                    delSiteArr = [];
+                    console.log(data.result);
+                }
+            });*/
         }
     </script>
 </div>
