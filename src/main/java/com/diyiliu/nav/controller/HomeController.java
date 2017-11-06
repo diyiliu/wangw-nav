@@ -2,7 +2,6 @@ package com.diyiliu.nav.controller;
 
 import com.diyiliu.common.util.JacksonUtil;
 import com.diyiliu.nav.dao.NavDao;
-import com.diyiliu.nav.model.GroupSite;
 import com.diyiliu.nav.model.SiteType;
 import com.diyiliu.nav.model.Website;
 import org.springframework.stereotype.Controller;
@@ -62,7 +61,7 @@ public class HomeController {
         return "redirect:/";
     }
 
-    @RequestMapping(value = "/saveSort")
+    @RequestMapping(value = "/saveSort", method = RequestMethod.POST)
     public @ResponseBody
     HashMap saveSort(String updateList, String delList) throws Exception {
         List<Website> list1 = JacksonUtil.toList(updateList, Website.class);
