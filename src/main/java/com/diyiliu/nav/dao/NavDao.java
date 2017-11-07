@@ -6,8 +6,10 @@ import com.diyiliu.nav.model.SiteType;
 import com.diyiliu.nav.model.Website;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.ResultSetHandler;
 import org.apache.commons.dbutils.handlers.MapHandler;
 import org.apache.commons.dbutils.handlers.MapListHandler;
+import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -59,6 +61,11 @@ public class NavDao {
             param[i] = new Object[]{site.getTop(), site.getId()};
         }
         queryRunner.batch(sql, param);
+    }
+
+    public String querySiteIcon(long id) throws Exception{
+        String sql = "SELECT icon FROM nav_site WHERE id=?";
+        return queryRunner.query(sql, new ScalarHandler<String>(), id);
     }
 
     public long insertSiteType(SiteType type) throws SQLException {
@@ -142,7 +149,7 @@ public class NavDao {
 
     public List<GroupSite> queryGroupSiteList() throws SQLException {
 
-        String sql = "SELECT s.ID, s.`NAME`, s.URL, s.ICON, t.`NAME` TYPE " +
+        String sql = "SELECT s.ID, s.`NAME`, s.URL, t.`NAME` TYPE " +
                 "FROM nav_site s INNER JOIN nav_type t on s.TYPE=t.ID " +
                 "ORDER BY t.TOP, s.TOP";
 
@@ -153,7 +160,6 @@ public class NavDao {
                 site.setId(rs.getInt("id"));
                 site.setName(rs.getString("name"));
                 site.setUrl(rs.getString("url"));
-                site.setIcon(rs.getString("icon"));
 
                 String type = rs.getString("TYPE");
 

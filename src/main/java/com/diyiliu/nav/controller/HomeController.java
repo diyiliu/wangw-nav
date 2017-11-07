@@ -7,20 +7,26 @@ import com.diyiliu.nav.model.Website;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import sun.misc.BASE64Decoder;
+import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import java.io.File;
-import java.io.FileOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Description: HomeController
@@ -30,8 +36,7 @@ import java.util.List;
 
 @Controller
 public class HomeController {
-    private final static String ICON_PATH = "upload/";
-    private final static String ICON_TOOL_URL = "http://statics.dnspod.cn/proxy_favicon/_/favicon?domain=";
+
     @Resource
     private NavDao navDao;
 
@@ -47,15 +52,9 @@ public class HomeController {
     }
 
     @RequestMapping(value = "/addSite", method = RequestMethod.POST)
-    public String addSite(Website site, HttpServletRequest request) throws Exception {
-        String dest = request.getSession().getServletContext().getRealPath(ICON_PATH);
-        URL url = new URL("http://" + site.getUrl() + "/favicon.ico");
-        if (!validUrl(url)) {
-            url = new URL(ICON_TOOL_URL + site.getUrl());
-        }
-        String iconPath = copyFileToIcon(url, new File(dest));
-
-        site.setIcon(ICON_PATH + iconPath);
+    public String addSite(Website site) throws Exception {
+        String icon = base64ICO("http://" + site.getUrl());
+        site.setIcon(icon);
         navDao.insertWebsite(site);
 
         return "redirect:/";
@@ -76,7 +75,7 @@ public class HomeController {
         return result;
     }
 
-    @RequestMapping(value = "/saveType")
+    @RequestMapping(value = "/saveType", method = RequestMethod.POST)
     public @ResponseBody
     HashMap saveType(String typesJson) throws Exception {
         List<SiteType> list = JacksonUtil.toList(typesJson, SiteType.class);
@@ -87,31 +86,107 @@ public class HomeController {
         return result;
     }
 
+    @RequestMapping(value = "/icon/{id}", method = RequestMethod.GET)
+    public void showIcon(@PathVariable String id, HttpServletResponse response) throws Exception {
+        String iconStr = navDao.querySiteIcon(Long.parseLong(id));
+        if (!StringUtils.isEmpty(iconStr)) {
+            BASE64Decoder decoder = new BASE64Decoder();
+            byte[] bytes = decoder.decodeBuffer(iconStr);
 
-    private String copyFileToIcon(URL url, File file) throws IOException {
-        // 创建临时文件，自动生成随机数在文件名中
-        File tempFile = File.createTempFile("icon", ".ico", file);
-        OutputStream os = new FileOutputStream(tempFile);
-        FileCopyUtils.copy(url.openStream(), os);
+           /*
+           for (int i = 0; i < bytes.length; i++) {
+                if (bytes[i] < 0) {
+                    bytes[i] += 256;
+                }
+            }
+            */
 
-        return tempFile.getName();
+            OutputStream out = response.getOutputStream();
+            out.write(bytes);
+            out.flush();
+            out.close();
+        }
     }
 
-    public boolean validUrl(URL url) {
+
+    public String base64ICO(String location) {
+        String iconTool = "http://statics.dnspod.cn/proxy_favicon/_/favicon?domain=";
+
+        String method = "GET";
+        String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36";
+
         HttpURLConnection connection = null;
+        InputStreamReader streamReader = null;
         try {
+            URL url = new URL(location);
             connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod(method);
+            connection.addRequestProperty("User-Agent", userAgent);
             int state = connection.getResponseCode();
+            if (state == 302) {
+                location = connection.getHeaderField("Location");
+                url = new URL(location);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod(method);
+                connection.addRequestProperty("User-Agent", userAgent);
+                state = connection.getResponseCode();
+            }
+
             if (state == 200) {
-                return true;
+                streamReader = new InputStreamReader(url.openStream(), "utf-8");
+                BufferedReader br = new BufferedReader(streamReader);
+
+                String icoPath = null;
+                String line;
+                while ((line = br.readLine()) != null) {
+                    if (line.contains(".ico")) {
+                        // 取出有用的范围
+                        Pattern p = Pattern.compile("(.*)(href=\")(.*?)(.ico\")(.*)");
+                        Matcher m = p.matcher(line);
+                        if (m.matches()) {
+                            String path = m.group(3);
+                            if (path.contains("//")) {
+                                icoPath = path + ".ico";
+                            } else {
+                                icoPath = location + path + ".ico";
+                            }
+                            break;
+                        }
+                    }
+                }
+
+                // 未匹配成功，用网络ICO工具获取
+                if (icoPath == null) {
+                    icoPath = iconTool + location;
+                }
+
+                url = new URL(location.substring(0, location.indexOf(":") + 1) + icoPath);
+                connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod(method);
+                connection.addRequestProperty("User-Agent", userAgent);
+                state = connection.getResponseCode();
+                if (state == 200) {
+                    byte[] bytes = FileCopyUtils.copyToByteArray(url.openStream());
+
+                    BASE64Encoder encoder = new BASE64Encoder();
+                    return encoder.encode(bytes);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (connection != null) {
-                connection.disconnect();
+            try {
+                if (streamReader != null) {
+                    streamReader.close();
+                }
+                if (connection != null) {
+                    connection.disconnect();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
-        return false;
+
+        return null;
     }
 }

@@ -47,7 +47,7 @@
                             <li th:each="site:${group.websiteList}" class="brick">
                                 <a href="javascript:void(0);" class="site" target="_blank" th:href="|http://${site.url}|"
                                    th:attr="data-id=${site.id}"
-                                   th:utext="|<img src='${site.icon}'>${site.name}|"></a>
+                                   th:utext="|<img src='/icon/${site.id}'>${site.name}|"></a>
                                 <a href="javascript:void(0);" class="del"><i class="material-icons tiny">clear</i></a>
                             </li>
                         </ul>
