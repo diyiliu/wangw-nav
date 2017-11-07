@@ -18,7 +18,7 @@ public class TestHttp {
 
     @Test
     public void test() throws Exception {
-        String location = "http://www.csdn.com";
+        String location = "http://www.baidu.com";
         URL url = new URL(location);
         try {
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -33,11 +33,15 @@ public class TestHttp {
                 httpURLConnection = (HttpURLConnection) new URL(location).openConnection();
                 httpURLConnection.setRequestMethod("GET");
                 httpURLConnection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36");
+                respCode = httpURLConnection.getResponseCode();
             }
+
+            System.out.println(respCode);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "utf-8"));
             String line;
             while ((line = br.readLine())!= null ){
+                System.out.println(line);
                 if (line.contains(".ico")){
                     // 取出有用的范围
                     Pattern p = Pattern.compile("(.*)(href=\")(.*?)(.ico\")(.*)");

@@ -122,6 +122,7 @@ public class HomeController {
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(method);
             connection.addRequestProperty("User-Agent", userAgent);
+
             int state = connection.getResponseCode();
             if (state == 302) {
                 location = connection.getHeaderField("Location");
@@ -157,10 +158,12 @@ public class HomeController {
 
                 // 未匹配成功，用网络ICO工具获取
                 if (icoPath == null) {
-                    icoPath = iconTool + location;
+                    String regex = "[hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://|/+$";
+                    url = new URL(iconTool + location.replaceAll(regex, ""));
+                }else {
+                    url = new URL(location.substring(0, location.indexOf(":") + 1) + icoPath);
                 }
 
-                url = new URL(location.substring(0, location.indexOf(":") + 1) + icoPath);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod(method);
                 connection.addRequestProperty("User-Agent", userAgent);
