@@ -18,7 +18,7 @@ public class TestHttp {
 
     @Test
     public void test() throws Exception {
-        String location = "http://www.baidu.com";
+        String location = "http://www.oschina.net";
         URL url = new URL(location);
         try {
             HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
@@ -27,7 +27,6 @@ public class TestHttp {
 
             int respCode = httpURLConnection.getResponseCode();
 
-            System.out.println(respCode);
             if (respCode != 200){
                 location = httpURLConnection.getHeaderField("Location");
                 httpURLConnection = (HttpURLConnection) new URL(location).openConnection();
@@ -35,8 +34,6 @@ public class TestHttp {
                 httpURLConnection.addRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36");
                 respCode = httpURLConnection.getResponseCode();
             }
-
-            System.out.println(respCode);
 
             BufferedReader br = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream(), "utf-8"));
             String line;

@@ -134,7 +134,7 @@ public class HomeController {
             }
 
             if (state == 200) {
-                streamReader = new InputStreamReader(url.openStream(), "utf-8");
+                streamReader = new InputStreamReader(connection.getInputStream(), "utf-8");
                 BufferedReader br = new BufferedReader(streamReader);
 
                 String icoPath = null;
