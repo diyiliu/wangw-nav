@@ -161,7 +161,7 @@ public class HomeController {
                     String regex = "[hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://|/+$";
                     url = new URL(iconTool + location.replaceAll(regex, ""));
                 }else {
-                    url = new URL(location.substring(0, location.indexOf(":") + 1) + icoPath);
+                    url = new URL(icoPath);
                 }
 
                 connection = (HttpURLConnection) url.openConnection();
