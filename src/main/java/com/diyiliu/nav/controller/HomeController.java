@@ -110,8 +110,6 @@ public class HomeController {
 
 
     public String base64ICO(String location) {
-        String iconTool = "http://statics.dnspod.cn/proxy_favicon/_/favicon?domain=";
-
         String method = "GET";
         String userAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.62 Safari/537.36";
 
@@ -142,14 +140,14 @@ public class HomeController {
                 while ((line = br.readLine()) != null) {
                     if (line.contains(".ico")) {
                         // 取出有用的范围
-                        Pattern p = Pattern.compile("(.*)(href=\")(.*?)(.ico\")(.*)");
+                        Pattern p = Pattern.compile("(.*)(href=\")(.*?.ico.*\")(.*)");
                         Matcher m = p.matcher(line);
                         if (m.matches()) {
                             String path = m.group(3);
                             if (path.contains("//")) {
-                                icoPath = path + ".ico";
+                                icoPath = path;
                             } else {
-                                icoPath = location + path + ".ico";
+                                icoPath = location + path;
                             }
                             break;
                         }
@@ -158,6 +156,7 @@ public class HomeController {
 
                 // 未匹配成功，用网络ICO工具获取
                 if (icoPath == null) {
+                    String iconTool = "http://statics.dnspod.cn/proxy_favicon/_/favicon?domain=";
                     String regex = "[hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://|/+$";
                     url = new URL(iconTool + location.replaceAll(regex, ""));
                 }else {
