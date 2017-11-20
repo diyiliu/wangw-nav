@@ -122,7 +122,7 @@ public class HomeController {
             connection.addRequestProperty("User-Agent", userAgent);
 
             int state = connection.getResponseCode();
-            if (state == 302) {
+            if (state == 302 || state == 301) {
                 location = connection.getHeaderField("Location");
                 url = new URL(location);
                 connection = (HttpURLConnection) url.openConnection();
@@ -140,10 +140,10 @@ public class HomeController {
                 while ((line = br.readLine()) != null) {
                     if (line.contains(".ico")) {
                         // 取出有用的范围
-                        Pattern p = Pattern.compile("(.*)(href=\")(.*?.ico.*\")(.*)");
+                        Pattern p = Pattern.compile("<link[^>]*href=\"(?<href>[^\"]*)\"[^>]*>");
                         Matcher m = p.matcher(line);
                         if (m.matches()) {
-                            String path = m.group(3);
+                            String path = m.group(1);
                             if (path.contains("//")) {
                                 icoPath = path;
                             } else {

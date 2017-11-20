@@ -32,10 +32,11 @@ public class TestReg {
     @Test
     public void test2(){
         String str = "<link rel=\"shortcut icon\" type=\"image/x-icon\" href=\"http://static.zcool.cn/git_z/z/site/favicon.ico?version=1510912853039\">";
-        Pattern p = Pattern.compile("(.*)(href=\")(.*?.ico.*\")(.*)");
+//        str ="<link rel=\"shortcut icon\" href=\"https://static.zhihu.com/static/favicon.ico\" type=\"image/x-icon\" />";
+        Pattern p = Pattern.compile("<link[^>]*href=\"(?<href>[^\"]*)\"[^>]*>");
         Matcher m = p.matcher(str);
         if (m.matches()) {
-            String path = m.group(3);
+            String path = m.group(1);
             System.out.println(path);
         }
 
