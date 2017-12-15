@@ -31,6 +31,7 @@
           <element id="library" level="project" name="Gradle: commons-dbutils:commons-dbutils:1.7" />
           <element id="library" level="project" name="Gradle: com.alibaba:druid:1.1.2" />
           <element id="library" level="project" name="Gradle: mysql:mysql-connector-java:5.1.37" />
+          <element id="library" level="project" name="Gradle: commons-collections:commons-collections:3.2.2" />
           <element id="library" level="project" name="Gradle: com.fasterxml.jackson.core:jackson-databind:2.9.2" />
           <element id="library" level="project" name="Gradle: ch.qos.logback:logback-classic:1.2.3" />
           <element id="library" level="project" name="Gradle: org.springframework:spring-core:4.2.5.RELEASE" />
@@ -49,7 +50,6 @@
           <element id="library" level="project" name="Gradle: org.unbescape:unbescape:1.1.5.RELEASE" />
           <element id="library" level="project" name="Gradle: org.javassist:javassist:3.20.0-GA" />
           <element id="library" level="project" name="Gradle: org.slf4j:slf4j-api:1.7.25" />
-          <element id="file-copy" path="$PROJECT_DIR$/../../../Local/repo/.gradle/caches/modules-2/files-2.1/commons-collections/commons-collections/3.2.2/8ad72fe39fa8c91eaaf12aadb21e0c3661fe26d5/commons-collections-3.2.2.jar" />
         </element>
       </element>
     </root>

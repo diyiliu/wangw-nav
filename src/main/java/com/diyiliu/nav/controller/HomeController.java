@@ -53,7 +53,7 @@ public class HomeController {
 
     @RequestMapping(value = "/addSite", method = RequestMethod.POST)
     public String addSite(Website site) throws Exception {
-        String icon = base64ICO("http://" + site.getUrl());
+        String icon = base64ICO(site.getUrl());
         site.setIcon(icon);
         navDao.insertWebsite(site);
 
@@ -116,15 +116,17 @@ public class HomeController {
         HttpURLConnection connection = null;
         InputStreamReader streamReader = null;
         try {
-            URL url = new URL(location);
+            URL url = new URL("http://" +location);
             connection = (HttpURLConnection) url.openConnection();
             connection.setRequestMethod(method);
             connection.addRequestProperty("User-Agent", userAgent);
 
             int state = connection.getResponseCode();
+
+            String dirLocation = location;
             if (state == 302 || state == 301) {
-                location = connection.getHeaderField("Location");
-                url = new URL(location);
+                dirLocation = connection.getHeaderField("Location");
+                url = new URL(dirLocation);
                 connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod(method);
                 connection.addRequestProperty("User-Agent", userAgent);
@@ -147,7 +149,7 @@ public class HomeController {
                             if (path.contains("//")) {
                                 icoPath = path;
                             } else {
-                                icoPath = location + path;
+                                icoPath = dirLocation + path;
                             }
                             break;
                         }
@@ -157,8 +159,7 @@ public class HomeController {
                 // 未匹配成功，用网络ICO工具获取
                 if (icoPath == null) {
                     String iconTool = "http://statics.dnspod.cn/proxy_favicon/_/favicon?domain=";
-                    String regex = "[hH][tT]{2}[pP]://|[hH][tT]{2}[pP][sS]://|/+$";
-                    url = new URL(iconTool + location.replaceAll(regex, ""));
+                    url = new URL(iconTool + location);
                 }else {
                     url = new URL(icoPath);
                 }
