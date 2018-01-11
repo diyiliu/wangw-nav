@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/>
     <meta name="viewport" content="width=device-width, maximum-scale=1.0, user-scalable=no"/>
-    <link rel="shortcut icon" href="../../static/img/favicon.ico" />
+    <link rel="shortcut icon" th:href="@{/static/img/favicon.ico}"/>
     <title>Default title</title>
-    <link href="/webjars/materializecss/0.100.2/css/materialize.css" type="text/css" rel="stylesheet"
-          media="screen,projection"/>
-    <script src="/webjars/jquery/3.2.1/jquery.js"></script>
-    <script src="/webjars/materializecss/0.100.2/js/materialize.js"></script>
+    <link th:href="@{/webjars/materializecss/0.100.2/css/materialize.css}" type="text/css" rel="stylesheet"/>
+    <script th:src="@{/webjars/jquery/3.2.1/jquery.js}"></script>
+    <script th:src="@{/webjars/materializecss/0.100.2/js/materialize.js}"></script>
 </head>
 <body>
 <!-- 内容区域 -->

@@ -5,10 +5,10 @@
 <head>
     <meta charset="UTF-8"/>
     <title>首页</title>
-    <link rel="stylesheet" href="../static/css/materialize-icon.css" th:href="@{/static/css/materialize-icon.css}">
-    <link rel="stylesheet" href="../static/css/nav.css" th:href="@{/static/css/nav.css}">
-    <link rel="stylesheet" href="../static/plugin/gridly/css/gridly.css">
-    <script src="../static/plugin/gridly/js/gridly.js"></script>
+    <link th:href="@{/static/css/materialize-icon.css}" type="text/css" rel="stylesheet">
+    <link th:href="@{/static/css/nav.css}" type="text/css" rel="stylesheet">
+    <link th:href="@{/static/plugin/gridly/css/gridly.css}" type="text/css" rel="stylesheet">
+    <script th:src="@{/static/plugin/gridly/js/gridly.js}"></script>
 </head>
 <body>
 <div layout:fragment="content">
@@ -45,9 +45,11 @@
                         </div>
                         <ul class="col m10 nav-list gridly">
                             <li th:each="site:${group.websiteList}" class="brick">
-                                <a href="javascript:void(0);" class="site" target="_blank" th:href="|http://${site.url}|"
-                                   th:attr="data-id=${site.id}"
-                                   th:utext="|<img src='/icon/${site.id}'>${site.name}|"></a>
+                                <a href="javascript:void(0);" class="site" target="_blank"
+                                   th:href="|http://${site.url}|"
+                                   th:attr="data-id=${site.id}">
+                                    <img th:src="@{/icon/{id}(id=${site.id})}"><span th:text="${site.name}"></span>
+                                </a>
                                 <a href="javascript:void(0);" class="del"><i class="material-icons tiny">clear</i></a>
                             </li>
                         </ul>
@@ -106,8 +108,7 @@
             <a href="javascript:void(0);" onclick="saveType()" class="modal-action waves-effect btn deep-orange">保存</a>
         </div>
     </div>
-    <script type="text/javascript">
-
+    <script type="text/javascript" th:inline="javascript">
         var delSiteArr = [];
         $(document).ready(function () {
             $('select').material_select();
@@ -210,7 +211,7 @@
             $('#modal2').modal('close');
 
             $('select').material_select();
-            $.post("/saveType", {typesJson: JSON.stringify(types)},
+            $.post(/*[[@{/saveType}]]*/, {typesJson: JSON.stringify(types)},
                 function (data) {
                     console.log(data.result);
                 }, "json");
@@ -247,7 +248,7 @@
             });
 
             //console.log(JSON.stringify(param));
-            $.post("/saveSort", {"updateList": JSON.stringify(arr), "delList": JSON.stringify(delSiteArr)},
+            $.post(/*[[@{saveSort}]]*/, {"updateList": JSON.stringify(arr), "delList": JSON.stringify(delSiteArr)},
                 function (data) {
                     delSiteArr = [];
                     console.log(data.result);

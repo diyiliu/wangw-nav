@@ -24,6 +24,7 @@ dependencies {
     compile group: 'org.springframework', name: 'spring-tx', version: "$springVersion"
 
     compile group: 'javax.servlet', name: 'servlet-api', version: '2.5'
+    compile group: 'org.thymeleaf', name: 'thymeleaf', version: '3.0.7.RELEASE'
     compile group: 'org.thymeleaf', name: 'thymeleaf-spring4', version: '3.0.7.RELEASE'
     compile group: 'nz.net.ultraq.thymeleaf', name: 'thymeleaf-layout-dialect', version: '2.2.2'
     compile group: 'org.webjars', name: 'jquery', version: '3.2.1'
@@ -43,7 +44,7 @@ dependencies {
 }
 
 war{
-    archiveName = 'wangw-nav.war'
+    archiveName = 'nav.war'
 }
 
 tasks.withType(JavaCompile) {
