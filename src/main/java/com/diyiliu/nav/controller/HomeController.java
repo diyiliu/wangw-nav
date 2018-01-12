@@ -16,13 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.URI;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -90,8 +89,7 @@ public class HomeController {
     public void showIcon(@PathVariable String id, HttpServletResponse response) throws Exception {
         String iconStr = navDao.querySiteIcon(Long.parseLong(id));
         if (!StringUtils.isEmpty(iconStr)) {
-            BASE64Decoder decoder = new BASE64Decoder();
-            byte[] bytes = decoder.decodeBuffer(iconStr);
+            byte[] bytes = Base64.getDecoder().decode(iconStr);
 
             OutputStream out = response.getOutputStream();
             out.write(bytes);
@@ -165,8 +163,7 @@ public class HomeController {
             statusCode = responseEntity.getStatusCode().value();
             if (statusCode == 200) {
                 byte[] bytes = responseEntity.getBody();
-                BASE64Encoder encoder = new BASE64Encoder();
-                return encoder.encode(bytes);
+                return Base64.getEncoder().encodeToString(bytes);
             }
         } catch (IOException e) {
             e.printStackTrace();
