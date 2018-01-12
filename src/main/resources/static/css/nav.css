@@ -39,7 +39,7 @@ body {
 
 .main .nav-list {
     position: relative;
-    padding: 10px;
+    padding: 5px;
     border-left: 3px solid #F5F5F5;
     transition: all 200ms;
 }
@@ -49,6 +49,7 @@ body {
     width: 120px;
     float: left;
     margin-left: 10px;
+    padding: 10px 2px;
     position: relative;
 }
 
@@ -76,7 +77,7 @@ body {
 .main .nav-list.bricks li a i {
     display: block;
     position: absolute;
-    top: 0;
+    top: 10px;
     right: 0;
     color: #343434;
     /*background-color: #0f9d58;*/
